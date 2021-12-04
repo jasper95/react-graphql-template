@@ -1,0 +1,808 @@
+{
+  "Resources": {
+    "graphqlFunctionServiceRoleDE8F6A18": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlFunction/ServiceRole/Resource"
+      }
+    },
+    "graphqlFunction067C62D4": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters9f8da555ed5e82bd719db66d591dc9c05610ffc6a5a4a318b8db95f6fb013a01S3Bucket7CA5FC1D"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters9f8da555ed5e82bd719db66d591dc9c05610ffc6a5a4a318b8db95f6fb013a01S3VersionKeyBC8BC201"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters9f8da555ed5e82bd719db66d591dc9c05610ffc6a5a4a318b8db95f6fb013a01S3VersionKeyBC8BC201"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "graphqlFunctionServiceRoleDE8F6A18",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "DB_URL": "{{resolve:secretsmanager:GraphqlSpike:SecretString:GRAPHQL_MONGO_URL::}}",
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+          }
+        },
+        "Handler": "index.handler",
+        "MemorySize": 1024,
+        "Runtime": "nodejs14.x"
+      },
+      "DependsOn": [
+        "graphqlFunctionServiceRoleDE8F6A18"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlFunction/Resource",
+        "aws:asset:path": "asset.9f8da555ed5e82bd719db66d591dc9c05610ffc6a5a4a318b8db95f6fb013a01",
+        "aws:asset:original-path": "/Users/bernales95/projects/graphql-template-spike",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "graphqlApiE1872E13": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "graphqlApi"
+      },
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlApi/Resource"
+      }
+    },
+    "graphqlApiCloudWatchRole91DA6D5D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlApi/CloudWatchRole/Resource"
+      }
+    },
+    "graphqlApiAccountEF2A39A2": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "graphqlApiCloudWatchRole91DA6D5D",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "graphqlApiE1872E13"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlApi/Account"
+      }
+    },
+    "graphqlApiDeploymentBFF5138532e0199a8903e36888f20fe9ac35710c": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "graphqlApiE1872E13"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "graphqlApiproxyANYF5B4F3E3",
+        "graphqlApiproxyOPTIONSDF4A5E39",
+        "graphqlApiproxy41A3F82F",
+        "graphqlApiANYEB5F59A4",
+        "graphqlApiOPTIONSE725EC50"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlApi/Deployment/Resource"
+      }
+    },
+    "graphqlApiDeploymentStageprod4C1F5CC5": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "graphqlApiE1872E13"
+        },
+        "DeploymentId": {
+          "Ref": "graphqlApiDeploymentBFF5138532e0199a8903e36888f20fe9ac35710c"
+        },
+        "StageName": "prod"
+      },
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlApi/DeploymentStage.prod/Resource"
+      }
+    },
+    "graphqlApiOPTIONSE725EC50": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "OPTIONS",
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "graphqlApiE1872E13",
+            "RootResourceId"
+          ]
+        },
+        "RestApiId": {
+          "Ref": "graphqlApiE1872E13"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+              },
+              "StatusCode": "204"
+            }
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }"
+          },
+          "Type": "MOCK"
+        },
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "StatusCode": "204"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlApi/Default/OPTIONS/Resource"
+      }
+    },
+    "graphqlApiproxy41A3F82F": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "graphqlApiE1872E13",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "{proxy+}",
+        "RestApiId": {
+          "Ref": "graphqlApiE1872E13"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlApi/Default/{proxy+}/Resource"
+      }
+    },
+    "graphqlApiproxyOPTIONSDF4A5E39": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "OPTIONS",
+        "ResourceId": {
+          "Ref": "graphqlApiproxy41A3F82F"
+        },
+        "RestApiId": {
+          "Ref": "graphqlApiE1872E13"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+              },
+              "StatusCode": "204"
+            }
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }"
+          },
+          "Type": "MOCK"
+        },
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "StatusCode": "204"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlApi/Default/{proxy+}/OPTIONS/Resource"
+      }
+    },
+    "graphqlApiproxyANYApiPermissionGraphqlTemplategraphqlApi5B41CBF4ANYproxyA04150EE": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "graphqlFunction067C62D4",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "graphqlApiE1872E13"
+              },
+              "/",
+              {
+                "Ref": "graphqlApiDeploymentStageprod4C1F5CC5"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlApi/Default/{proxy+}/ANY/ApiPermission.GraphqlTemplategraphqlApi5B41CBF4.ANY..{proxy+}"
+      }
+    },
+    "graphqlApiproxyANYApiPermissionTestGraphqlTemplategraphqlApi5B41CBF4ANYproxy3BA6415C": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "graphqlFunction067C62D4",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "graphqlApiE1872E13"
+              },
+              "/test-invoke-stage/*/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlApi/Default/{proxy+}/ANY/ApiPermission.Test.GraphqlTemplategraphqlApi5B41CBF4.ANY..{proxy+}"
+      }
+    },
+    "graphqlApiproxyANYF5B4F3E3": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "ANY",
+        "ResourceId": {
+          "Ref": "graphqlApiproxy41A3F82F"
+        },
+        "RestApiId": {
+          "Ref": "graphqlApiE1872E13"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "graphqlFunction067C62D4",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlApi/Default/{proxy+}/ANY/Resource"
+      }
+    },
+    "graphqlApiANYApiPermissionGraphqlTemplategraphqlApi5B41CBF4ANYB4E70FBD": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "graphqlFunction067C62D4",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "graphqlApiE1872E13"
+              },
+              "/",
+              {
+                "Ref": "graphqlApiDeploymentStageprod4C1F5CC5"
+              },
+              "/*/"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlApi/Default/ANY/ApiPermission.GraphqlTemplategraphqlApi5B41CBF4.ANY.."
+      }
+    },
+    "graphqlApiANYApiPermissionTestGraphqlTemplategraphqlApi5B41CBF4ANY5B6332ED": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "graphqlFunction067C62D4",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "graphqlApiE1872E13"
+              },
+              "/test-invoke-stage/*/"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlApi/Default/ANY/ApiPermission.Test.GraphqlTemplategraphqlApi5B41CBF4.ANY.."
+      }
+    },
+    "graphqlApiANYEB5F59A4": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "ANY",
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "graphqlApiE1872E13",
+            "RootResourceId"
+          ]
+        },
+        "RestApiId": {
+          "Ref": "graphqlApiE1872E13"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "graphqlFunction067C62D4",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/graphqlApi/Default/ANY/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/01QXW+DMAz8LXsP7lAr7XW00572UbFfkAWPBUiCYmcdQvz3JaFMffLZudh3V0K5P8D93aO8UKGafjcr5xHmD5aqFxURcoSttq04OUvsg2Jx+rJn6aVBRp+a98BjyOMayQWvMOHIbzRrZxeRls+DNJ+NLKxrsCN4y+U5WJUoQksDc+2G/DPVRdC+kOk+QZYRezgG1SMfJaFYt8Ec6f9Lki70RhOtV0fdSsaLnGB+yfQoj6tRX5VusFLKBcviCcfBTQZttnLTpQSysBVsJrOOV+Rv16THKzp79zvd5rDhZVlEMg8d7X7KA5QPMfeOtC58vK4NQr3WP7v7BNeUAQAA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "GraphqlTemplate/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Parameters": {
+    "AssetParameters9f8da555ed5e82bd719db66d591dc9c05610ffc6a5a4a318b8db95f6fb013a01S3Bucket7CA5FC1D": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"9f8da555ed5e82bd719db66d591dc9c05610ffc6a5a4a318b8db95f6fb013a01\""
+    },
+    "AssetParameters9f8da555ed5e82bd719db66d591dc9c05610ffc6a5a4a318b8db95f6fb013a01S3VersionKeyBC8BC201": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"9f8da555ed5e82bd719db66d591dc9c05610ffc6a5a4a318b8db95f6fb013a01\""
+    },
+    "AssetParameters9f8da555ed5e82bd719db66d591dc9c05610ffc6a5a4a318b8db95f6fb013a01ArtifactHash113196E6": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"9f8da555ed5e82bd719db66d591dc9c05610ffc6a5a4a318b8db95f6fb013a01\""
+    }
+  },
+  "Outputs": {
+    "graphqlApiEndpointCADF91D9": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "graphqlApiE1872E13"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "graphqlApiDeploymentStageprod4C1F5CC5"
+            },
+            "/"
+          ]
+        ]
+      }
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-2"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "monorepo-template",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Jasper Bernales <bernalesjasper@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "lerna run build --stream",
+    "lint": "eslint ./packages --ext .ts,.tsx",
+    "lint:parallel": "lerna run lint --parallel",
+    "test": "yarn build && jest",
+    "test:watch": "yarn build && jest --watch",
+    "clean": "rm -rf .build && lerna run clean --parallel",
+    "deploy": "lerna run --scope @monorepo/cdk deploy"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.5.0",
+    "@typescript-eslint/parser": "^5.5.0",
+    "eslint": "^8.4.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "lerna": "^4.0.0",
+    "prettier": "^2.5.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.2"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}
