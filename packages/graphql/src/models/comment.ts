@@ -1,6 +1,6 @@
-import { Schema, model } from 'mongoose';
-import { composeMongoose } from 'graphql-compose-mongoose';
-import { MovieTC } from './movie';
+import { Schema, model } from 'mongoose'
+import { composeMongoose } from 'graphql-compose-mongoose'
+import { MovieTC } from './movie'
 
 const CommentSchema = new Schema({
   name: String,
@@ -11,9 +11,9 @@ const CommentSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Movie',
   },
-});
-export const CommentModel = model('Comment', CommentSchema, 'comments');
-export const CommentTC = composeMongoose(CommentModel);
+})
+export const CommentModel = model('Comment', CommentSchema, 'comments')
+export const CommentTC = composeMongoose(CommentModel)
 
 CommentTC.addRelation('movie', {
   resolver: () => MovieTC.mongooseResolvers.findById(),
@@ -21,4 +21,4 @@ CommentTC.addRelation('movie', {
     _id: (source) => source.movie_id,
   },
   projection: { movie_id: 1 },
-});
+})

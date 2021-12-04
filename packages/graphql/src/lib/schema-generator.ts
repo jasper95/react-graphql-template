@@ -1,16 +1,19 @@
-import { schemaComposer } from 'graphql-compose';
-import { ObjectTypeComposerWithMongooseResolvers } from 'graphql-compose-mongoose';
-import snakeCase from 'lodash/snakeCase';
+import { schemaComposer } from 'graphql-compose'
+import { ObjectTypeComposerWithMongooseResolvers } from 'graphql-compose-mongoose'
+import snakeCase from 'lodash/snakeCase'
 
-export function generateGraphqlSchema(objectComposer: ObjectTypeComposerWithMongooseResolvers<any, any>) {
-  const name = snakeCase(objectComposer.getTypeName());
+export function generateGraphqlSchema(
+  objectComposer: ObjectTypeComposerWithMongooseResolvers<any, any>
+) {
+  const name = snakeCase(objectComposer.getTypeName())
   schemaComposer.Query.addFields({
     [`${name}ById`]: objectComposer.mongooseResolvers.findById(),
     [`${name}ByIds`]: objectComposer.mongooseResolvers.findByIds(),
     [`${name}One`]: objectComposer.mongooseResolvers.findOne(),
     [`${name}Many`]: objectComposer.mongooseResolvers.findMany(),
     [`${name}DataLoader`]: objectComposer.mongooseResolvers.dataLoader(),
-    [`${name}DataLoaderMany`]: objectComposer.mongooseResolvers.dataLoaderMany(),
+    [`${name}DataLoaderMany`]:
+      objectComposer.mongooseResolvers.dataLoaderMany(),
     // [`${name}ByIdLean`]: objectComposer.mongooseResolvers.findById({ lean: true }),
     // [`${name}ByIdsLean`]: objectComposer.mongooseResolvers.findByIds({ lean: true }),
     // [`${name}OneLean`]: objectComposer.mongooseResolvers.findOne({ lean: true }),
@@ -20,7 +23,7 @@ export function generateGraphqlSchema(objectComposer: ObjectTypeComposerWithMong
     [`${name}Count`]: objectComposer.mongooseResolvers.count(),
     [`${name}Connection`]: objectComposer.mongooseResolvers.connection(),
     [`${name}Pagination`]: objectComposer.mongooseResolvers.pagination(),
-  });
+  })
 
   schemaComposer.Mutation.addFields({
     [`${name}CreateOne`]: objectComposer.mongooseResolvers.createOne(),
@@ -31,5 +34,5 @@ export function generateGraphqlSchema(objectComposer: ObjectTypeComposerWithMong
     [`${name}RemoveById`]: objectComposer.mongooseResolvers.removeById(),
     [`${name}RemoveOne`]: objectComposer.mongooseResolvers.removeOne(),
     [`${name}RemoveMany`]: objectComposer.mongooseResolvers.removeMany(),
-  });
+  })
 }

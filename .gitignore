@@ -9,3 +9,4 @@ lerna-debug.log
 /packages/*/dist/
 /packages/*/build/
 /packages/*/cdk.out/
+.DS_Store
