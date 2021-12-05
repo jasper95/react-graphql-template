@@ -1,5 +1,5 @@
+import CommentsList from '@/modules/comments/comments'
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
@@ -50,6 +50,7 @@ export default function Home() {
             </p>
           </a>
         </div>
+        <CommentsList />
       </main>
 
       <footer className={styles.footer}>

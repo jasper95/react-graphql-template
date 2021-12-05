@@ -1,0 +1,12 @@
+query CommentsList(
+  $filter: FilterFindManyCommentInput
+  $skip: Int
+  $sort: SortFindManyCommentInput
+) {
+  commentMany(filter: $filter, skip: $skip, sort: $sort) {
+    email
+    movie_id
+    text
+    _id
+  }
+}

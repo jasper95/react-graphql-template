@@ -1,0 +1,28 @@
+schema: 'https://59g6xgddml.execute-api.us-east-2.amazonaws.com/prod/graphql'
+documents: 'src/**/*.graphql'
+overwrite: true
+generates:
+  src/shared/generated/graphql.types.ts:
+    plugins:
+      - 'typescript'
+    hooks:
+      afterOneFileWrite:
+        - eslint --fix
+  src/shared/generated/graphql.schema.json:
+    plugins:
+      - 'introspection'
+  src/:
+    preset: near-operation-file
+    presetConfig:
+      extension: .ts
+      baseTypesPath: '~@/shared/generated/graphql.types'
+    plugins:
+      - 'typescript-operations'
+      - 'typescript-react-query'
+    hooks:
+      afterOneFileWrite:
+        - eslint --fix
+    config:
+      fetcher:
+        func: '@/shared/fetcher#fetcher'
+        isReactHook: true
