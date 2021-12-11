@@ -1,16 +1,12 @@
 {
-  "name": "@monorepo/graphql",
+  "name": "graphql-api",
   "version": "1.0.0",
   "license": "MIT",
   "private": true,
-  "main": "dist/app.js",
-  "types": "dist/app.d.ts",
-  "files": [
-    "dist"
-  ],
+  "main": "src/app.ts",
   "scripts": {
-    "start": "ts-node src/server.ts",
-    "build": "tsc -b",
+    "dev": "ts-node src/server.ts",
+    "build": "tsc",
     "clean": "rm -rf ./dist && rm tsconfig.tsbuildinfo"
   },
   "dependencies": {
@@ -23,12 +19,19 @@
     "graphql-compose": "^9.0.4",
     "graphql-compose-mongoose": "^9.7.0",
     "lodash": "^4.17.21",
-    "mongoose": "^6.0.14"
+    "mongoose": "^6.0.14",
+    "ts-node": "^10.4.0"
   },
   "devDependencies": {
     "@types/compression": "^1.7.2",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
-    "@types/lodash": "^4.14.177"
+    "@types/lodash": "^4.14.177",
+    "@types/react": "17.0.37",
+    "config": "*",
+    "eslint": "7.32.0",
+    "next-transpile-modules": "9.0.0",
+    "tsconfig": "*",
+    "typescript": "4.5.2"
   }
 }

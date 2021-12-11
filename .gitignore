@@ -1,12 +1,34 @@
-node_modules/
-coverage/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-tsconfig.tsbuildinfo
+# dependencies
+node_modules
+.pnp
+.pnp.js
 
-lerna-debug.log
+# testing
+coverage
 
-/packages/*/node_modules/
-/packages/*/dist/
-/packages/*/build/
-/packages/*/cdk.out/
+# next.js
+.next/
+out/
+build
+cdk.out
+dist
+
+# misc
 .DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# turbo
+.turbo

@@ -4,28 +4,37 @@
   "private": true,
   "author": "Jasper Bernales <bernalesjasper@gmail.com>",
   "license": "MIT",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "build": "lerna run build --stream",
-    "lint": "eslint ./packages --ext .ts,.tsx",
-    "lint:parallel": "lerna run lint --parallel",
-    "test": "yarn build && jest",
-    "test:watch": "yarn build && jest --watch",
-    "clean": "rm -rf .build && lerna run clean --parallel",
-    "deploy": "lerna run --scope @monorepo/cdk deploy"
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "format": "prettier --write '**/*.{ts,tsx,.md}'"
   },
   "devDependencies": {
-    "@types/react": "17.0.37",
-    "@typescript-eslint/eslint-plugin": "5.5.0",
-    "eslint": "8.4.0",
-    "eslint-config-next": "12.0.5",
-    "eslint-config-prettier": "8.3.0",
-    "eslint-plugin-prettier": "4.0.0",
-    "lerna": "^4.0.0",
-    "prettier": "2.5.0",
-    "ts-node": "^10.4.0",
-    "typescript": "^4.5.2"
+    "prettier": "^2.5.1",
+    "turbo": "latest"
   },
-  "workspaces": [
-    "packages/*"
-  ]
+  "turbo": {
+    "pipeline": {
+      "build": {
+        "dependsOn": [
+          "^build"
+        ],
+        "outputs": [
+          "dist/**",
+          ".next/**"
+        ]
+      },
+      "lint": {
+        "outputs": []
+      },
+      "dev": {
+        "cache": false
+      }
+    }
+  }
 }

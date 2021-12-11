@@ -1,5 +1,5 @@
 {
-  "name": "@monorepo/cdk",
+  "name": "stack",
   "version": "1.0.0",
   "license": "MIT",
   "private": true,
@@ -9,19 +9,18 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc -b",
-    "clean": "rm -rf ./dist && rm tsconfig.tsbuildinfo",
+    "build": "tsc",
     "deploy": "cdk deploy"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "^1.134.0",
+    "@aws-cdk/aws-apigateway": "1.134.0",
     "@aws-cdk/aws-cloudfront": "1.134.0",
-    "@aws-cdk/aws-lambda": "^1.134.0",
-    "@aws-cdk/aws-lambda-nodejs": "^1.134.0",
+    "@aws-cdk/aws-lambda": "1.134.0",
+    "@aws-cdk/aws-lambda-nodejs": "1.134.0",
     "@aws-cdk/aws-s3-deployment": "1.134.0",
-    "@aws-cdk/core": "^1.134.0",
-    "@monorepo/graphql": "^1.0.0",
-    "@vendia/serverless-express": "^4.5.2"
+    "@aws-cdk/core": "1.134.0",
+    "@vendia/serverless-express": "^4.5.2",
+    "graphql-api": "*"
   },
   "devDependencies": {
     "aws-cdk": "1.134.0",
