@@ -1,4 +1,6 @@
-const serverlessExpress = require('@vendia/serverless-express')
-import app from 'graphql-api'
+import { ApolloServer } from 'apollo-server-lambda'
+import schema from 'graphql-api'
 
-exports.handler = serverlessExpress({ app })
+const server = new ApolloServer({ schema })
+
+export const handler = server.createHandler()

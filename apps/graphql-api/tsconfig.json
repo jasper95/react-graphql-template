@@ -3,7 +3,9 @@
     "lib": ["dom","ES2015"],
     "module": "CommonJS",
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "moduleResolution": "node",
+    "target": "ES6"
   },
   "exclude": ["node_modules"],
   "extends": "tsconfig/base.json",
